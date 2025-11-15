@@ -19,7 +19,23 @@ router
     upload.single("listing[image]"),
     wrapAsync(listingController.createListing)
   );
+  //Searched Listing
+router.post("/searchedListing",async(req,res)=>{
   
+  let {countryName} = req.body;
+  const searchedListings = await Listing.find({
+  country: { $regex: countryName, $options: "i" }
+});
+  console.log(searchedListings);
+  if (searchedListings<1) {
+    req.flash("error", "Listing for your requested country does not exist!");
+    return res.redirect("/listings");
+  }
+  res.render("listings/searchedListing.ejs",{ searchedListings });
+ 
+  
+})
+
 //New Route
 router.get("/new", isLoggedIn, listingController.renderNewForm);
 
@@ -57,6 +73,7 @@ router.get(
   isOwner,
   wrapAsync(listingController.renderEditForm)
 );
+
 
 //Update Route
 
