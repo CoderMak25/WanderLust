@@ -7,61 +7,64 @@
 <div class="container py-4">
 
   <!-- TITLE -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <h2 class="fw-bold"><%= listing.title %></h2>
+  <div class="row justify-content-center mb-4">
+    <div class="col-12 col-md-10 col-lg-8">
+      <h2 class="fw-bold text-center"><%= listing.title %></h2>
     </div>
   </div>
 
-  <!-- IMAGE + DETAILS -->
-  <div class="row g-4">
+  <!-- IMAGE + DETAILS (STACKED) -->
+  <div class="row justify-content-center g-4">
+    <div class="col-12 col-md-10 col-lg-8">
 
-    <!-- IMAGE INSIDE CARD -->
-    <div class="col-12 col-md-6">
-      <div class="card shadow-sm border">
-        <img
-          src="<%= listing.image.url %>"
-          class="card-img-top img-fluid rounded"
-          alt="listing_image"
-          style="max-height: 350px; object-fit: cover;"
-        />
-      </div>
-    </div>
+      <div class="row g-4">
 
-    <!-- DETAILS CARD -->
-    <div class="col-12 col-md-6">
-      <div class="card shadow-sm p-3 border">
-        <p>Owned by <strong><%= listing.owner.username %></strong></p>
-        <p><%= listing.description %></p>
-        <p class="fs-5 fw-semibold">₹ <%= listing.price.toLocaleString("en-IN") %></p>
-        <p><strong>Location:</strong> <%= listing.location %></p>
-        <p><strong>Country:</strong> <%= listing.country %></p>
-
-        <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
-        <div class="d-flex gap-3 mt-3">
-          <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-dark">Edit</a>
-
-          <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
-            <button class="btn btn-outline-danger">Delete</button>
-          </form>
+        <!-- FULL-WIDTH BIG IMAGE -->
+        <div class="col-12">
+          <div class="card shadow-sm border">
+            <img
+              src="<%= listing.image.url %>"
+              class="card-img-top img-fluid rounded"
+              style="max-height: 450px; width: 100%; object-fit: cover;"
+            />
+          </div>
         </div>
-        <% } %>
+
+        <!-- DETAILS BELOW IMAGE -->
+        <div class="col-12">
+          <div class="card shadow-sm p-3 border">
+            <p>Owned by <strong><%= listing.owner.username %></strong></p>
+            <p><%= listing.description %></p>
+            <p class="fs-5 fw-semibold">₹ <%= listing.price.toLocaleString("en-IN") %></p>
+            <p><strong>Location:</strong> <%= listing.location %></p>
+            <p><strong>Country:</strong> <%= listing.country %></p>
+
+            <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
+            <div class="d-flex gap-3 mt-3">
+              <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-dark">Edit</a>
+              <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-outline-danger">Delete</button>
+              </form>
+            </div>
+            <% } %>
+          </div>
+        </div>
+
       </div>
     </div>
-
-  </div> <!-- row -->
+  </div>
 
   <!-- REVIEW FORM -->
   <% if(currUser){ %>
-  <div class="row mt-5">
-    <div class="col-12 col-lg-8">
+  <div class="row justify-content-center mt-5">
+    <div class="col-12 col-md-10 col-lg-8">
       <hr />
       <h4 class="mb-3">Leave a review</h4>
 
       <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
 
         <label class="form-label">Rating</label>
-        <fieldset class="starability-coinFlip mb-3 ">
+        <fieldset class="starability-coinFlip mb-3">
           <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked/>
           <input type="radio" id="r1" name="review[rating]" value="1"/><label for="r1">1</label>
           <input type="radio" id="r2" name="review[rating]" value="2"/><label for="r2">2</label>
@@ -80,48 +83,51 @@
   <% } %>
 
   <!-- REVIEWS -->
-  <div class="row mt-5">
-    <div class="col-12 col-lg-8">
+  <div class="row justify-content-center mt-5">
+    <div class="col-12 col-md-10 col-lg-8">
       <hr />
+
       <% if(!listing.reviews.length){ %>
 
         <h4>No Reviews Yet</h4>
 
       <% } else { %>
 
-        <h4 class="mb-3">All Reviews</h4>
+      <h4 class="mb-3">All Reviews</h4>
 
-        <div class="row g-3">
-          <% for(review of listing.reviews){ %>
-          <div class="col-12 col-md-6 ">
-            <div class="card border shadow-sm h-100 ">
-              <div class="card-body ms-3 mb-2">
-                <h5 class="card-title">@<%= review.author.username %></h5>
-                <p class="starability-result" data-rating="<%= review.rating %>"></p>
-                <p><%= review.comment %></p>
+      <div class="row g-3">
+        <% for(review of listing.reviews){ %>
+        <div class="col-12 col-md-6">
+          <div class="card shadow-sm border h-100">
+            <div class="card-body ms-2 mb-2">
+              <h5>@<%= review.author.username %></h5>
+              <p class="starability-result" data-rating="<%= review.rating %>"></p>
+              <p><%= review.comment %></p>
 
-                <% if(currUser && currUser._id.equals(review.author._id)){ %>
-                <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
-                  <button class="btn btn-sm btn-outline-dark">Delete</button>
-                </form>
-                <% } %>
-              </div>
+              <% if(currUser && currUser._id.equals(review.author._id)){ %>
+              <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-sm btn-outline-dark">Delete</button>
+              </form>
+              <% } %>
             </div>
           </div>
-          <% } %>
         </div>
+        <% } %>
+      </div>
+
       <% } %>
+
     </div>
   </div>
 
   <!-- MAP -->
-  <div class="row mt-5">
-    <div class="col-12 col-lg-8">
+  <div class="row justify-content-center mt-5">
+    <div class="col-12 col-md-10 col-lg-8">
       <h4 class="mb-3">Where you'll be</h4>
       <div id="map" class="rounded shadow-sm" style="height: 20rem; width: 100%;"></div>
     </div>
   </div>
 
-</div> <!-- container -->
+</div>
 
 <script src="/js/map.js"></script>
