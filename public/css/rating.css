@@ -300,3 +300,8 @@
   -webkit-animation-timing-function: ease-in-out;
           animation-timing-function: ease-in-out;
 }
+
+.starability-result {
+  transform: scale(0.7); /* smaller stars */
+  transform-origin: left center;
+}

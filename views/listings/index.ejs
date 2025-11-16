@@ -1,122 +1,261 @@
 <% layout("/layouts/boilerplate") %>
 
 <style>
+  /* BAR at top containing everything */
+  #filters-bar {
+    background: white;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    position: relative;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* LEFT + RIGHT BUTTONS */
+  .scroll-btn {
+    background: white;
+    border: none;
+    font-size: 22px;
+    padding: 10px 14px;
+    cursor: pointer;
+    color: black;
+    font-weight: bold;
+  }
+
+  .scroll-btn:hover {
+    background: #f2f2f2;
+  }
+
+  .scroll-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* Scrollable filter row */
   #filters {
     display: flex;
-    flex-wrap: wrap;
-    margin-top: 1rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex-grow: 1; /* takes full space between buttons */
+    padding: 5px 10px;
+    scroll-behavior: smooth;
+
+    cursor: grab;
   }
+
+  #filters:active {
+    cursor: grabbing;
+  }
+
+  #filters::-webkit-scrollbar {
+    display: none;
+  }
+
   .filter {
     text-align: center;
     margin-right: 2rem;
-    
     opacity: 0.7;
+    min-width: 70px;
   }
+
   .filter:hover {
     opacity: 1;
-    cursor: pointer;
   }
+
   .filter p {
     font-size: 0.8rem;
   }
-  .tax-info{
-    display: none;
-  }
-  .tax-toggle{
-    border:1px solid black;
+
+  .tax-toggle {
+    border: 1px solid black;
     border-radius: 1rem;
     height: 3.25rem;
     padding: 1rem;
-    margin-left: 2rem;
+    margin-left: 1rem;
     display: flex;
     align-items: center;
+    min-width: max-content;
   }
+
+  .tax-info {
+    display: none;
+  }
+
+  
 </style>
-<div id="filters">
-  <div class="filter">
-    <div><i class="fa-solid fa-fire"></i></div>
-    <p>Trending</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-bed"></i></div>
-    <p>Rooms</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-mountain-city"></i></div>
-    <p>Iconic Cities</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-mountain"></i></div>
-    <p>Mountains</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-brands fa-fort-awesome"></i></div>
-    <p>Castles</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-person-swimming"></i></div>
-    <p>Amazing Pools</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-campground"></i></div>
-    <p>Camping</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-solid fa-cow"></i></div>
-    <p>Farms</p>
-  </div>
-  <div class="filter">
-    <div><i class="fa-regular fa-snowflake"></i></div>
-    <p>Arctic</p>
-  </div>
-  
-  
-  <div class="tax-toggle">
-    <div class="form-check-reverse form-switch">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        role="switch"
-        id="switchCheckDefault"
-      />
-      <label class="form-check-label" for="switchCheckDefault"
-        >Display total after taxes</label
-      >
+
+<!-- ⭐ FILTER BAR WITH BUTTONS -->
+<div id="filters-bar">
+
+  <!-- LEFT BUTTON -->
+  <button id="leftBtn" class="scroll-btn disabled">‹</button>
+
+  <!-- SCROLLABLE ICON ROW -->
+  <div id="filters">
+
+    <div class="filter">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
     </div>
+
+    <div class="filter">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+
+    <div class="filter">
+      <div><i class="fa-solid fa-mountain-city"></i></div>
+      <p>Iconic Cities</p>
+    </div>
+
+    <div class="filter">
+      <div><i class="fa-solid fa-mountain"></i></div>
+      <p>Mountains</p>
+    </div>
+
+    <div class="filter">
+      <div><i class="fa-brands fa-fort-awesome"></i></div>
+      <p>Castles</p>
+    </div>
+
+    <div class="filter">
+      <div><i class="fa-solid fa-person-swimming"></i></div>
+      <p>Amazing Pools</p>
+    </div>
+
+    <div class="filter">
+      <div><i class="fa-solid fa-campground"></i></div>
+      <p>Camping</p>
+    </div>
+
+    <div class="filter">
+      <div><i class="fa-solid fa-cow"></i></div>
+      <p>Farms</p>
+    </div>
+
+    <div class="filter">
+      <div><i class="fa-regular fa-snowflake"></i></div>
+      <p>Arctic</p>
+    </div>
+
+    
+
   </div>
+
+  <!-- RIGHT BUTTON -->
+  <button id="rightBtn" class="scroll-btn">›</button>
+  <div class="tax-toggle">
+      <div class="form-check-reverse form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="switchCheckDefault" />
+        <label class="form-check-label rgt-btn" for="switchCheckDefault">
+          Display total after taxes
+        </label>
+      </div>
+    </div>
 </div>
+
+
+
+<!-- LISTINGS -->
 <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
-  <%for(let listing of allListings){%>
-  <a href="/listings/<%= listing._id%>" class="listing-link">
+  <% for (let listing of allListings) { %>
+  <a href="/listings/<%= listing._id %>" class="listing-link">
     <div class="card listing-card">
       <img
-        src="<%= listing.image.url%>"
+        src="<%= listing.image.url %>"
         class="card-img-top"
         alt="listing_image"
-        style="height: 17rem"
-      />
+        style="height: 17rem" />
       <div class="card-img-overlay"></div>
       <div class="card-body">
         <p class="card-text">
-          <b><%= listing.title %> </b><br />
-         &#8377 <%= listing.price.toLocaleString("en-IN") %> / night
-         <i class="tax-info"> &nbsp; &nbsp;+18% GST </i>
+          <b><%= listing.title %></b><br />
+          ₹<%= listing.price.toLocaleString("en-IN") %> / night
+          <i class="tax-info">&nbsp;&nbsp;+18% GST</i>
         </p>
       </div>
     </div>
   </a>
-  <%}%>
+  <% } %>
 </div>
+
+
 <script>
-    let taxSwitch = document.getElementById("switchCheckDefault");
-    taxSwitch.addEventListener("click",()=>{
-        let taxInfo = document.getElementsByClassName("tax-info");
-        for(info of taxInfo){
-            if(info.style.display != "inline"){
-                info.style.display = "inline";
-            }else{
-                info.style.display = "none";
-            }
-        }
-    })
+  /* TAX TOGGLE */
+  let taxSwitch = document.getElementById("switchCheckDefault");
+  taxSwitch.addEventListener("click", () => {
+    let taxInfo = document.getElementsByClassName("tax-info");
+    for (info of taxInfo) {
+      info.style.display = info.style.display !== "inline" ? "inline" : "none";
+    }
+  });
+
+  /* BUTTON SCROLLING */
+  const filters = document.getElementById("filters");
+  const leftBtn = document.getElementById("leftBtn");
+  const rightBtn = document.getElementById("rightBtn");
+
+  function updateButtons() {
+    leftBtn.classList.toggle("disabled", filters.scrollLeft <= 5);
+    rightBtn.classList.toggle(
+      "disabled",
+      filters.scrollLeft + filters.clientWidth >= filters.scrollWidth - 5
+    );
+  }
+
+  leftBtn.onclick = () => {
+    filters.scrollBy({ left: -100, behavior: "smooth" });
+  };
+
+  rightBtn.onclick = () => {
+    filters.scrollBy({ left: 100, behavior: "smooth" });
+  };
+
+  filters.addEventListener("scroll", updateButtons);
+  window.addEventListener("resize", updateButtons);
+  updateButtons();
+
+  /* DRAG TO SCROLL */
+  let isDown = false, startX, scrollLeft;
+
+  filters.addEventListener("mousedown", (e) => {
+    isDown = true;
+    startX = e.pageX;
+    scrollLeft = filters.scrollLeft;
+  });
+
+  filters.addEventListener("mouseleave", () => isDown = false);
+  filters.addEventListener("mouseup", () => isDown = false);
+
+  filters.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const walk = (e.pageX - startX) * 1.3;
+    filters.scrollLeft = scrollLeft - walk;
+    updateButtons();
+  });
+
+  const btn = document.querySelector(".rgt-btn");
+
+function updateButtonText() {
+  if (window.matchMedia("(max-width: 768px)").matches) {
+    btn.textContent = "Taxes";   // text for mobile
+  } else {
+    btn.textContent = "Display total after taxes"; // text for desktop
+  }
+}
+
+// Run on load
+updateButtonText();
+
+// Run on resize
+window.addEventListener("resize", updateButtonText);
 </script>
